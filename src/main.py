@@ -23,6 +23,10 @@ logger.addHandler(handler)
 brm = Bromine(instance=config.INSTANCE)
 logger.info(f"Connecting to {config.INSTANCE}")
 
+def log_get_job():
+    joblist = schedule.get_jobs()
+    for job in joblist:
+        logger.info(f"Next run: {job.next_run}")
 
 # 生成/投稿を行う
 def generate_and_post():
@@ -73,9 +77,11 @@ def generate_and_post():
         
     except Exception as e:
         logger.error(f"Error: {e}")
+        log_get_job()
         return       
     else:
         logger.info("Job done.")
+        log_get_job()
         return
 
 
@@ -123,6 +129,8 @@ async def on_comeback():
 
 async def main_loop():
     schedule.every(1).hour.do(generate_and_post)
+    logger.info("Scheduled job: generate_and_post")
+    log_get_job()
 
     brm.ws_connect("globalTimeline", on_note)
     asyncio.create_task(brm.main())
