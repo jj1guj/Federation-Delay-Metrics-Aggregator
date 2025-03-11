@@ -128,7 +128,7 @@ async def on_comeback():
 
 
 async def main_loop():
-    schedule.every(1).hour.do(generate_and_post)
+    schedule.every().hour.at(":00").do(generate_and_post)
     logger.info("Scheduled job: generate_and_post")
     log_get_job()
 
