@@ -66,7 +66,7 @@ def generate_charts():
             avg_delay = instance[4]
             if instance_host not in instance_data:
                 instance_data[instance_host] = {'time_labels': [], 'delay_values': []}
-            time_label = start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H')
+            time_label = start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H')
             instance_data[instance_host]['time_labels'].append(time_label)
             instance_data[instance_host]['delay_values'].append(avg_delay)
 
