@@ -5,6 +5,11 @@ from brcore import Bromine
 import util.database as db
 import logging
 import sys
+import os
+import util.gen_charts as gen_charts
+import util.s3 as s3
+import schedule 
+import config
 from logging import getLogger, INFO
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -13,12 +18,32 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(fu
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-INSTANCE = "shahu.ski"
-brm = Bromine(instance=INSTANCE)
-
-logger.info(f"Connecting to {INSTANCE}")
+brm = Bromine(instance=config.INSTANCE)
+logger.info(f"Connecting to {config.INSTANCE}")
 
 
+# 生成/投稿を行う
+async def generate_and_post():
+    #try:
+    # 各チャートを生成
+    gen_charts.generate_charts()
+    
+    # data.jsonとヒートマップ, チャートをアップロード
+    s3.upload_to_r2("output/data.json", "data.json")
+    s3.upload_to_r2("output/avg_diff_heatmap.png", "heatmap.png")
+    s3.upload_to_r2("output/avg_diff.png", "chart.png")
+    
+    # インスタンス別のチャートをアップロード(output/instances/{host}.png)
+    for host in os.listdir("output/instances"):
+        s3.upload_to_r2(f"output/instances/{host}", f"instance/{host}")
+    #except Exception as e:
+    #    logger.error(f"Error: {e}")
+    #    return       
+    #else:
+    #    return
+
+
+# ノート受信時の処理
 async def on_note(note: dict):
     logger.info(f"Received note: {note}")
     body = note["body"]  # body情報だけほしい
@@ -55,10 +80,24 @@ async def on_note(note: dict):
         logger.error(body)
         
         pass
-    
+
+# メインループ
+async def main():
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
+        
+# jobの設定
+logger.info("Setting up job")
+schedule.every().hours.at(":00").do(generate_and_post)
+            
 brm.ws_connect("globalTimeline", on_note)
 
+asyncio.run(generate_and_post())
+
 try:
-    asyncio.run(brm.main())
+    #asyncio.run(brm.main())
+    asyncio.run(main())
 except KeyboardInterrupt:
     logger.info("KeyboardInterrupt")
+
