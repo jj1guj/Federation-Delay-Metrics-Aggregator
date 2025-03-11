@@ -32,11 +32,15 @@ def generate_charts():
     data = {
         "last_updated": now.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
         "source_instance": config.INSTANCE,
+        "charts": {
+            "heatmap": f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/heatmap.png",
+            "bar_chart": f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/chart.png"
+        },
         "data": {}
     }
 
     # 過去24時間分のデータを取得
-    for i in range(24):
+    for i in range(23, -1, -1):
         end_time = now - datetime.timedelta(hours=i)
         start_time = end_time - datetime.timedelta(hours=1)
 
@@ -54,7 +58,7 @@ def generate_charts():
         # ヒートマップ生成用
         # 上位15位以外のインスタンスを除外
         filtered_diff = sorted_diff[:20]
-        sorted_chart_data[end_time] = filtered_diff # filtered_diff を格納
+        sorted_chart_data[start_time] = filtered_diff # filtered_diff を格納
         
         # インスタンスごとのデータを格納
         for instance in sorted_diff:
@@ -62,10 +66,11 @@ def generate_charts():
             avg_delay = instance[4]
             if instance_host not in instance_data:
                 instance_data[instance_host] = {'time_labels': [], 'delay_values': []}
-            time_label = end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H')
+            time_label = start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H')
             instance_data[instance_host]['time_labels'].append(time_label)
             instance_data[instance_host]['delay_values'].append(avg_delay)
-            
+
+
             
             # 観測しているインスタンスのhost, name, version, deff, created_atをすべて統合しjson形式で返す
             if instance[1] not in data["data"]:
@@ -83,8 +88,8 @@ def generate_charts():
             })
         
     # ファイルに保存
-    with open('output/data.json', 'w') as f:
-        f.write(json.dumps(data, indent=4))
+    with open('output/data.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(data, indent=4, ensure_ascii=False))
         
 
         
@@ -95,8 +100,8 @@ def generate_charts():
     for i in range(24):
         end_time = now - datetime.timedelta(hours=i)
         start_time = end_time - datetime.timedelta(hours=1)
-        time_labels.append(end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H'))
-        sorted_diff = sorted_chart_data[end_time]
+        time_labels.append(start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H'))
+        sorted_diff = sorted_chart_data[start_time]
         if not instances:
             instances = [instance[1] for instance in sorted_diff]
         instance_diff_map = {instance[1]: instance[4] for instance in sorted_diff}
@@ -184,6 +189,9 @@ def generate_charts():
             ax.set_ylabel("Average Delay (s)")
             ax.set_title(f"Federation Delays for {instance_host} (Past 24 Hours)")
             plt.xticks(rotation=45, ha='right')
+            # データラベルを表示
+            for i, txt in enumerate(data['delay_values']):
+                ax.annotate(f"{txt:.1f}s", (data['time_labels'][i], data['delay_values'][i]), textcoords="offset points", xytext=(0,10), ha='center')
             plt.tight_layout()
             plt.savefig(f"./output/instances/{instance_host}.png", bbox_inches='tight')
             logger.info(f"Line chart saved to ./output/instances/{instance_host}.png")
