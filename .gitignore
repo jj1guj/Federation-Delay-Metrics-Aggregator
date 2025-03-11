@@ -2,3 +2,4 @@
 *.pyc
 output
 .env
+.DS_STORE
