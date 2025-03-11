@@ -8,6 +8,7 @@ import japanize_matplotlib
 import numpy as np
 import json
 import config
+from pytz import timezone
 from logging import getLogger, INFO
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -29,7 +30,7 @@ def generate_charts():
     sorted_chart_data = {}
     
     data = {
-        "last_updated": now.strftime('%Y-%m-%d %H:%M:%S'),
+        "last_updated": now.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
         "source_instance": config.INSTANCE,
         "data": {}
     }
@@ -61,7 +62,7 @@ def generate_charts():
             avg_delay = instance[4]
             if instance_host not in instance_data:
                 instance_data[instance_host] = {'time_labels': [], 'delay_values': []}
-            time_label = end_time.strftime('%H')
+            time_label = end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H')
             instance_data[instance_host]['time_labels'].append(time_label)
             instance_data[instance_host]['delay_values'].append(avg_delay)
             
@@ -77,8 +78,8 @@ def generate_charts():
                 }
             data["data"][instance[1]]["details"].append({
                 "delay_sec": str(instance[4]),
-                "utc_start_time": start_time.strftime('%Y-%m-%d %H:%M:%S'),
-                "utc_end_time": end_time.strftime('%Y-%m-%d %H:%M:%S'),
+                "start_time": start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
+                "end_time": end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
             })
         
     # ファイルに保存
@@ -94,7 +95,7 @@ def generate_charts():
     for i in range(24):
         end_time = now - datetime.timedelta(hours=i)
         start_time = end_time - datetime.timedelta(hours=1)
-        time_labels.append(end_time.strftime('%H'))
+        time_labels.append(end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%H'))
         sorted_diff = sorted_chart_data[end_time]
         if not instances:
             instances = [instance[1] for instance in sorted_diff]
@@ -130,7 +131,7 @@ def generate_charts():
                             ha="center", va="center", color="w") # Display rounded values
 
         ax.set_xlabel("Instance Host")
-        ax.set_ylabel("Time (UTC)")
+        ax.set_ylabel("Time")
         ax.set_title("Federation delays by instance (Heatmap)")
         fig.colorbar(im, ax=ax, label='Average delays (s)') # Add colorbar with label
         plt.rcParams['font.family'] = 'IPAexGothic' # 日本語フォント設定
@@ -157,7 +158,7 @@ def generate_charts():
         plt.xticks(rotation=90)
         plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.3)
         ax.set_ylabel("Average delays (s)")
-        ax.set_title(f"Federation delays by instance for time range: {(now - datetime.timedelta(hours=1)).strftime('%Y-%m-%d %H')}(UTC) - {now.strftime('%Y-%m-%d %H')}(UTC)")
+        ax.set_title(f"Federation delays by instance for time range: {(now - datetime.timedelta(hours=1)).replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H')} - {now.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H')}")
         plt.tight_layout()
         plt.savefig("./output/avg_diff.png", bbox_inches='tight')
         logger.info(f"Chart saved to ./output/avg_diff.png")
@@ -179,7 +180,7 @@ def generate_charts():
                 continue
             fig, ax = plt.subplots(figsize=(10, 6))
             ax.plot(data['time_labels'], data['delay_values'], marker='o')
-            ax.set_xlabel("Time (UTC)")
+            ax.set_xlabel("Time")
             ax.set_ylabel("Average Delay (s)")
             ax.set_title(f"Federation Delays for {instance_host} (Past 24 Hours)")
             plt.xticks(rotation=45, ha='right')

@@ -8,7 +8,8 @@ import sys
 import os
 import util.gen_charts as gen_charts
 import util.s3 as s3
-import schedule 
+import schedule
+from pytz import timezone
 import config
 from logging import getLogger, INFO
 logger = getLogger(__name__)
@@ -69,8 +70,8 @@ async def on_note(note: dict):
         db.insert_summary(note_id, note_created_at, note_received_at, diff, instance["name"], host, instance["softwareName"], instance["softwareVersion"])
         
         logger.info(f"Note {note_id} processed.")
-        logger.info(f"Note created at: {note_created_at}")
-        logger.info(f"Note received at: {note_received_at}")
+        logger.info(f"Note created at: {note_created_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
+        logger.info(f"Note received at: {note_received_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
         logger.info(f"Diff: {diff}s")
         logger.info(f"Instance: {instance['name']} | {host} ({instance['softwareName']}-{instance['softwareVersion']})")
     except Exception as e:
@@ -87,15 +88,17 @@ async def main():
         schedule.run_pending()
         await asyncio.sleep(1)
         
+
+asyncio.run(generate_and_post())
+
 # jobの設定
 logger.info("Setting up job")
 schedule.every().hours.at(":00").do(generate_and_post)
             
 brm.ws_connect("globalTimeline", on_note)
 
-
 try:
-    asyncio.create_task(main())
+    #asyncio.create_task(main())
     asyncio.run(brm.main())
 except KeyboardInterrupt:
     logger.info("KeyboardInterrupt")
