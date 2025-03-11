@@ -28,11 +28,9 @@ async def on_note(note: dict):
         # id
         note_id = body["id"]
         # ノート作成日時
-        note_created_at = body["createdAt"]
-        # 現在時刻
-        note_received_at = datetime.datetime.now()
-        # ノート作成日時をdatetime型に変換
-        note_created_at = datetime.datetime.strptime(note_created_at, "%Y-%m-%dT%H:%M:%S.%fZ")
+        note_created_at = datetime.datetime.strptime(body["createdAt"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        # 現在時刻(UTC)
+        note_received_at = datetime.datetime.utcnow()
         # 現在時刻とノート作成日時の差分(秒)
         diff = str(note_received_at - note_created_at)
         diff = diff.split(":")

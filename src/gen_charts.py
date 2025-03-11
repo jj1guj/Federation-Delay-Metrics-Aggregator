@@ -13,12 +13,12 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 # 現在時刻
-now = datetime.datetime.now()
+now = datetime.datetime.utcnow()
 chart_data = {}
 
 for i in range(24):
-    start_time = now - datetime.timedelta(hours=i)
-    end_time = start_time + datetime.timedelta(hours=1)
+    end_time = now - datetime.timedelta(hours=i)
+    start_time = end_time - datetime.timedelta(hours=1)
 
     # インスタンスごとの統計を取得
     avg_diff = db.get_avg_diff(start_time, end_time)
@@ -43,7 +43,7 @@ for end_time, sorted_diff in chart_data.items():
     ax.bar(instances, diffs)
     ax.set_xlabel("Instance Host")
     ax.set_ylabel("Average delays (s)")
-    ax.set_title(f"Federation delays by instance for time range: {start_time.strftime('%Y-%m-%d %H:%M')} - {end_time.strftime('%Y-%m-%d %H:%M')}")
+    ax.set_title(f"Federation delays by instance for time range: {start_time.strftime('%Y-%m-%d %H:%M')}(UTC) - {end_time.strftime('%Y-%m-%d %H:%M')}(UTC)")
     plt.tight_layout()
 
     # save
@@ -59,7 +59,7 @@ diffs = [instance[4] for instance in chart_data[now]]
 ax.bar(instances, diffs)
 ax.set_xlabel("Instance Host")
 ax.set_ylabel("Average delays (s)")
-ax.set_title(f"Federation delays by instance for time range: {start_time.strftime('%Y-%m-%d %H:%M')} - {end_time.strftime('%Y-%m-%d %H:%M')}")
+ax.set_title(f"Federation delays by instance for time range: {(now - datetime.timedelta(hours=1)).strftime('%Y-%m-%d %H:%M')}(UTC) - {now.strftime('%Y-%m-%d %H:%M')}(UTC)")
 plt.tight_layout()
 plt.savefig("avg_diff.png")
 logger.info(f"Chart saved to avg_diff.png")
