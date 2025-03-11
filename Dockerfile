@@ -2,7 +2,7 @@ FROM python:3.10
 WORKDIR /usr/src/app
 
 # setup job
-RUN apt-get install -y vim cron
+RUN apt-get update && apt-get install -y vim cron
 COPY crontab /var/spool/cron/crontabs/root
 RUN crontab /var/spool/cron/crontabs/root
 CMD ["cron", "-f"]
