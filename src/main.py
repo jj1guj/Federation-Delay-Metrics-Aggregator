@@ -93,21 +93,19 @@ async def on_note(note: dict):
         # 現在時刻(UTC)
         note_received_at = datetime.datetime.utcnow()
         # 現在時刻とノート作成日時の差分(秒)
-        diff = str(note_received_at - note_created_at)
-        diff = diff.split(":")
-        diff = float(diff[0]) * 3600 + float(diff[1]) * 60 + float(diff[2])
-        
-        
+        time_diff = note_received_at - note_created_at
+        diff_seconds = time_diff.total_seconds()
+
         # インスタンス情報
         instance = body["user"]["instance"]
         host = body["user"]["host"]
         
-        db.insert_summary(note_id, note_created_at, note_received_at, diff, instance["name"], host, instance["softwareName"], instance["softwareVersion"])
+        db.insert_summary(note_id, note_created_at, note_received_at, diff_seconds, instance["name"], host, instance["softwareName"], instance["softwareVersion"])
         
         logger.info(f"Note {note_id} processed.")
         logger.info(f"Note created at: {note_created_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
         logger.info(f"Note received at: {note_received_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
-        logger.info(f"Diff: {diff}s")
+        logger.info(f"Diff: {diff_seconds}s")
         logger.info(f"Instance: {instance['name']} | {host} ({instance['softwareName']}-{instance['softwareVersion']})")
     except Exception as e:
         db.insert_error(note_id, note_created_at, note_received_at, e)
