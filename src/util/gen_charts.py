@@ -156,8 +156,8 @@ def generate_charts():
     try:
         # 過去1時間分のグラフを上位15位で生成
         fig, ax = plt.subplots()
-        instances = [instance[0] for instance in sorted_chart_data[now]]
-        diffs = [instance[4] for instance in sorted_chart_data[now]]
+        instances = [instance[1] for instance in sorted_chart_data[now - datetime.timedelta(hours=1)]]
+        diffs = [instance[4] for instance in sorted_chart_data[now - datetime.timedelta(hours=1)]]
         ax.bar(instances, diffs)
         ax.set_xlabel("Instance Host")
         plt.xticks(rotation=90)

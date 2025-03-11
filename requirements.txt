@@ -6,3 +6,4 @@ schedule===1.2.2
 boto3===1.37.10
 dotenv===0.9.9
 pytz
+Misskey.py===4.1.0

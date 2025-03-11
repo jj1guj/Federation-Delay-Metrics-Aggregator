@@ -7,6 +7,7 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 INSTANCE = os.environ.get("INSTANCE", "shahu.ski")
+MISSKEY_TOKEN = os.environ.get("MISSKEY_TOKEN")
 PREFIX = os.environ.get("PREFIX")
 BUKKET_PUBLIC_URL = os.environ.get("BUKKET_PUBLIC_URL")
 ENDPOINT_URL = os.environ.get("ENDPOINT_URL")

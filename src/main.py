@@ -10,6 +10,7 @@ import util.gen_charts as gen_charts
 import util.s3 as s3
 import schedule
 from pytz import timezone
+from misskey import Misskey
 import config
 from logging import getLogger, INFO
 logger = getLogger(__name__)
@@ -24,7 +25,8 @@ logger.info(f"Connecting to {config.INSTANCE}")
 
 
 # 生成/投稿を行う
-async def generate_and_post():
+def generate_and_post():
+    logger.info("Job start.")
     try:
         # 各チャートを生成
         gen_charts.generate_charts()
@@ -37,10 +39,43 @@ async def generate_and_post():
         # インスタンス別のチャートをアップロード(output/instances/{host}.png)
         for host in os.listdir("output/instances"):
             s3.upload_to_r2(f"output/instances/{host}", f"instance/{host}")
+            
+        
+        mi = Misskey(config.INSTANCE, config.MISSKEY_TOKEN)
+        # ドライブへ画像のアップロード
+        logger.info("Uploading files to drive")
+        with open("output/data.json", "rb") as f:
+            mi_data = mi.drive_files_create(f)
+        with open("output/avg_diff_heatmap.png", "rb") as f:
+            mi_heatmap = mi.drive_files_create(f)
+        with open("output/avg_diff.png", "rb") as f:
+            mi_chart = mi.drive_files_create(f)
+        
+        # 投稿
+        logger.info("Posting note")
+        mi.notes_create(text="""
+各連合先の配送遅延情報が更新されました。
+
+インスタンス毎のチャートは`https://fdma.shahu.ski/report/instance/{host}.png`から確認できます。
+[GitHub](https://github.com/team-shahu/Federation-Delay-Metrics-Aggregator)
+                        """, 
+                        file_ids=[mi_chart["id"], mi_heatmap["id"], mi_data["id"]], visibility="home")
+        logger.info("Posted note")
+        
+        # ファイルの削除
+        logger.info("Deleting files")
+        os.remove("output/data.json")
+        os.remove("output/avg_diff_heatmap.png")
+        os.remove("output/avg_diff.png")
+        for host in os.listdir("output/instances"):
+            os.remove(f"output/instances/{host}")
+        logger.info("Files deleted")
+        
     except Exception as e:
         logger.error(f"Error: {e}")
         return       
     else:
+        logger.info("Job done.")
         return
 
 
@@ -82,23 +117,21 @@ async def on_note(note: dict):
         
         pass
 
-# メインループ
-async def main():
+
+@brm.add_comeback_deco()
+async def on_comeback():
+    logger.info("Reconnected")
+
+
+async def main_loop():
+    schedule.every(1).hour.do(generate_and_post)
+
+    brm.ws_connect("globalTimeline", on_note)
+    asyncio.create_task(brm.main())
+
     while True:
         schedule.run_pending()
         await asyncio.sleep(1)
-        
 
-asyncio.run(generate_and_post())
-
-# jobの設定
-logger.info("Setting up job")
-schedule.every().hours.at(":00").do(generate_and_post)
-            
-brm.ws_connect("hybridTimeline", on_note)
-
-try:
-    #asyncio.create_task(main())
-    asyncio.run(brm.main())
-except KeyboardInterrupt:
-    logger.info("KeyboardInterrupt")
+if __name__ == '__main__':
+    asyncio.run(main_loop())

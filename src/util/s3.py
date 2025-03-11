@@ -24,7 +24,7 @@ s3 = boto3.client(
 
 def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
     """
-    ファイルをCloudflare R2にアップロードし、公開URLを返し、ローカルファイルを削除します。
+    ファイルをCloudflare R2にアップロードし、公開URLを返します。
 
     :param file_path: アップロードするファイルへのパス
     :param object_name: S3オブジェクト名。指定されない場合、file_pathのbasenameが使用されます
@@ -42,8 +42,6 @@ def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
         # アップロードされたファイルの公開URLを生成
         url = f"{config.BUKKET_PUBLIC_URL}{object_name}"
         
-        # ローカルファイルを削除
-        os.remove(file_path)
         
         logger.info(f"File {file_path} uploaded to {object_name}")
         return url
