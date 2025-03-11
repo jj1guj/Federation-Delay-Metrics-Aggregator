@@ -77,7 +77,7 @@ def generate_charts():
                 data["data"][instance[1]] = {
                     "name": str(instance[0]),
                     "host": str(instance[1]),
-                    "version": str(instance[2]),
+                    "version": f"{instance[2]}-{instance[3]}",
                     "chart_url": str(f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/instance/{instance[1]}.png"),
                     "details": []
                 }
