@@ -24,23 +24,23 @@ logger.info(f"Connecting to {config.INSTANCE}")
 
 # 生成/投稿を行う
 async def generate_and_post():
-    #try:
-    # 各チャートを生成
-    gen_charts.generate_charts()
-    
-    # data.jsonとヒートマップ, チャートをアップロード
-    s3.upload_to_r2("output/data.json", "data.json")
-    s3.upload_to_r2("output/avg_diff_heatmap.png", "heatmap.png")
-    s3.upload_to_r2("output/avg_diff.png", "chart.png")
-    
-    # インスタンス別のチャートをアップロード(output/instances/{host}.png)
-    for host in os.listdir("output/instances"):
-        s3.upload_to_r2(f"output/instances/{host}", f"instance/{host}")
-    #except Exception as e:
-    #    logger.error(f"Error: {e}")
-    #    return       
-    #else:
-    #    return
+    try:
+        # 各チャートを生成
+        gen_charts.generate_charts()
+        
+        # data.jsonとヒートマップ, チャートをアップロード
+        s3.upload_to_r2("output/data.json", "data.json")
+        s3.upload_to_r2("output/avg_diff_heatmap.png", "heatmap.png")
+        s3.upload_to_r2("output/avg_diff.png", "chart.png")
+        
+        # インスタンス別のチャートをアップロード(output/instances/{host}.png)
+        for host in os.listdir("output/instances"):
+            s3.upload_to_r2(f"output/instances/{host}", f"instance/{host}")
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        return       
+    else:
+        return
 
 
 # ノート受信時の処理
@@ -93,11 +93,9 @@ schedule.every().hours.at(":00").do(generate_and_post)
             
 brm.ws_connect("globalTimeline", on_note)
 
-asyncio.run(generate_and_post())
 
 try:
-    #asyncio.run(brm.main())
-    asyncio.run(main())
+    asyncio.create_task(main())
+    asyncio.run(brm.main())
 except KeyboardInterrupt:
     logger.info("KeyboardInterrupt")
-
