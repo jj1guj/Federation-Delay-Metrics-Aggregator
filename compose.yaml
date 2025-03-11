@@ -2,9 +2,8 @@ services:
   app:
     build: .
     volumes:
-      # ./botのディレクトリを仮想環境の/usr/src/appにマウントする
-      # rwと記述することで書き込みも可能なディレクトリとして認識される
       - ./src:/usr/src/app:rw 
+      - ./data/database.db:/usr/src/app/database.db:rw
     env_file:
       - .env
     command: ["python3", "main.py"]
