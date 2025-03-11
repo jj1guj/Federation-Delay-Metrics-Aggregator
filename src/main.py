@@ -95,7 +95,7 @@ asyncio.run(generate_and_post())
 logger.info("Setting up job")
 schedule.every().hours.at(":00").do(generate_and_post)
             
-brm.ws_connect("globalTimeline", on_note)
+brm.ws_connect("hybridTimeline", on_note)
 
 try:
     #asyncio.create_task(main())
