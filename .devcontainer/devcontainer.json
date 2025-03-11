@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
 	"name": "Federation-Delay-Metrics-Aggregator",
-    "dockerComposeFile": "docker-compose.yml",
+    "dockerComposeFile": "compose.yaml",
     "service": "workspace",
     "workspaceFolder": "/workspace",
 
