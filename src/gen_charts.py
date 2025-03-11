@@ -49,7 +49,7 @@ for i in range(24):
     
     # インスタンスごとのデータを格納
     for instance in sorted_diff:
-        instance_host = instance[0]
+        instance_host = instance[1]
         avg_delay = instance[4]
         if instance_host not in instance_data:
             instance_data[instance_host] = {'time_labels': [], 'delay_values': []}
@@ -121,8 +121,7 @@ plt.savefig("./output/avg_diff.png", bbox_inches='tight')
 logger.info(f"Chart saved to ./output/avg_diff.png")
 
 # インスタンスごとに折れ線グラフを生成
-for instance_name, data in instance_data.items():
-    instance_host = [instance[1] for instance in sorted_chart_data[now] if instance[0] == instance_name][0]
+for instance_host, data in instance_data.items():
     if not data['time_labels']:
         logger.warning(f"No data for instance: {instance_host}, skipping chart generation.")
         continue
