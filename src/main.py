@@ -62,4 +62,5 @@ async def on_comeback():
 
 
 if __name__ == '__main__':
+    brm.ws_connect("globalTimeline", on_note)
     asyncio.run(brm.main())
