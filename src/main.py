@@ -81,7 +81,7 @@ def generate_and_post():
 
 # ノート受信時の処理
 async def on_note(note: dict):
-    logger.info(f"Received note: {note}")
+    logger.debug(f"Received note: {note}")
     body = note["body"]  # body情報だけほしい
     
     
