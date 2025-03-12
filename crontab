@@ -1,2 +1,0 @@
-# 毎時0分処理開始
-* 8 * * * /usr/local/bin/python /usr/src/app/job.py
