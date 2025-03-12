@@ -51,11 +51,11 @@ def generate_and_post():
         
         # 投稿
         logger.info("Posting note")
-        mi.notes_create(text="""
+        mi.notes_create(text=f"""
 各連合先の配送遅延情報が更新されました。
 {time}現在の情報です。
 
-インスタンス毎のチャートは`https://fdma.shahu.ski/report/instance/{host}.png`から確認できます。
+インスタンス毎のチャートは`https://fdma.shahu.ski/report/instance/[host].png`から確認できます。
 [GitHub](https://github.com/team-shahu/Federation-Delay-Metrics-Aggregator)
 
 #配送遅延 #FDMA #Federation-Delay-Metrics-Aggregator
