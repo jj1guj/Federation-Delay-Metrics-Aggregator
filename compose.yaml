@@ -8,5 +8,5 @@ services:
       - .env
     environment:
       - TZ=Asia/Tokyo
-    command: ["python3", "main.py"]
+    command: ["dockerize", "-timeout", "1m", "python3", "main.py", "&", "cron", "-f"]
     tty: true
