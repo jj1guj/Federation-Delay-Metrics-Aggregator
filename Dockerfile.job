@@ -1,0 +1,14 @@
+FROM python:3.10
+WORKDIR /app
+
+# install python packages
+COPY ./requirements.txt /app/requirements.txt
+COPY ./src/* /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# setup job
+RUN apt-get update && apt-get install -y vim cron
+RUN (crontab -l ; echo "0 * * * * cd /app && /usr/local/bin/python3 /app/job.py") | crontab
+RUN touch /var/log/cron.log
+
+CMD ["cron", "-f"]

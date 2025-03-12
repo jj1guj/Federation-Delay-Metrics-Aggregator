@@ -1,12 +1,26 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.app
     volumes:
-      - ./src:/usr/src/app:rw 
-      - ./data/database.db:/usr/src/app/database.db:rw
+      - ./src:/app:rw 
+      - ./data/database.db:/app/database.db:rw
     env_file:
       - .env
     environment:
       - TZ=Asia/Tokyo
-    command: ["dockerize", "-timeout", "1m", "python3", "main.py", "&", "cron", "-f"]
+    tty: true
+
+  job:
+    build:
+      context: .
+      dockerfile: Dockerfile.job
+    volumes:
+      - ./src:/app:rw 
+      - ./data/database.db:/app/database.db:ro
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tokyo
     tty: true
