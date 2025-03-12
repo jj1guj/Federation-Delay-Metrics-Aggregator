@@ -6,6 +6,8 @@ from misskey import Misskey
 import config
 import logging
 import sys
+import time
+import schedule
 from logging import getLogger, INFO
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -14,6 +16,11 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(fu
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+def log_get_job():
+     joblist = schedule.get_jobs()
+     for job in joblist:
+         logger.info(f"Next run: {job.next_run}")
+         
 # 生成/投稿を行う
 def generate_and_post():
     logger.info("Job start.")
@@ -67,10 +74,18 @@ def generate_and_post():
         
     except Exception as e:
         logger.error(f"Error: {e}")
+        log_get_job()
         return       
     else:
         logger.info("Job done.")
+        log_get_job()
         return
     
 if __name__ == "__main__":
-    generate_and_post()
+    schedule.every().hour.at(":23").do(generate_and_post)
+    log_get_job()
+    
+    while True:
+         schedule.run_pending()
+         time.sleep(1)
+
