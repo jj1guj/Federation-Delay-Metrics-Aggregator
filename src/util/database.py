@@ -10,7 +10,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(fu
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-dbname = 'database.db'
+dbname = './data/database.db'
 conn = sqlite3.connect(dbname)
 cur = conn.cursor()
 

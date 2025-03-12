@@ -4,8 +4,7 @@ services:
     build:
       context: .
     volumes:
-      - ./src:/app:rw 
-      - ./data/database.db:/app/database.db:rw
+      - ./data:/app/data:rw
     env_file:
       - .env
     environment:
@@ -18,10 +17,11 @@ services:
     build:
       context: .
     volumes:
-      - ./src:/app:rw 
-      - ./data/database.db:/app/database.db:ro
+      - ./data:/app/data:ro
     env_file:
       - .env
+    depends_on:
+      - "app"
     environment:
       - TZ=Asia/Tokyo
     command: ["python3", "job.py"]
