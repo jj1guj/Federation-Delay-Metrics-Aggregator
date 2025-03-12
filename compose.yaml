@@ -24,5 +24,5 @@ services:
       - .env
     environment:
       - TZ=Asia/Tokyo
-    command: ["python3", "main.py"]
+    command: ["python3", "job.py"]
     tty: true
