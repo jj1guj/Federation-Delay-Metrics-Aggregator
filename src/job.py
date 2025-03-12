@@ -82,7 +82,7 @@ def generate_and_post():
         return
     
 if __name__ == "__main__":
-    schedule.every().hour.at(":23").do(generate_and_post)
+    schedule.every().hour.at(":00").do(generate_and_post)
     log_get_job()
     
     while True:
