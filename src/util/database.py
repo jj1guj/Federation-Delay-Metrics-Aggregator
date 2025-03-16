@@ -53,7 +53,7 @@ def insert_summary(note_id, note_created_at, note_received_at, diff, instance_na
         pass
     else:
         logger.info(f"Summary {note_id} inserted.")
-    
+
 def insert_error(note_id, note_created_at, note_received_at, error):
     try:
         logger.error(f"Inserting error: {note_id}")

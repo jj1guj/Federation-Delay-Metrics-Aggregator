@@ -23,8 +23,7 @@ logger.info(f"Connecting to {config.INSTANCE}")
 async def on_note(note: dict):
     logger.debug(f"Received note: {note}")
     body = note["body"]  # body情報だけほしい
-    
-    
+
     try:
         # id
         note_id = body["id"]
@@ -39,9 +38,9 @@ async def on_note(note: dict):
         # インスタンス情報
         instance = body["user"]["instance"]
         host = body["user"]["host"]
-        
+
         db.insert_summary(note_id, note_created_at, note_received_at, diff_seconds, instance["name"], host, instance["softwareName"], instance["softwareVersion"])
-        
+
         logger.info(f"Note {note_id} processed.")
         logger.info(f"Note created at: {note_created_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
         logger.info(f"Note received at: {note_received_at.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo'))}")
@@ -52,7 +51,6 @@ async def on_note(note: dict):
         logger.error(f"Error: {e}")
         logger.error("-"*10)
         logger.error(body)
-        
         pass
 
 

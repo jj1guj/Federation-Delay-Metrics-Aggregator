@@ -28,7 +28,7 @@ def generate_charts():
     now = datetime.datetime.utcnow()
     instance_data = {}
     sorted_chart_data = {}
-    
+
     data = {
         "last_updated": now.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
         "source_instance": config.INSTANCE,
@@ -48,7 +48,7 @@ def generate_charts():
         avg_diff = db.get_avg_diff(start_time, end_time)
         sorted_diff = avg_diff.copy()
         sorted_diff.sort(key=lambda x: x[4], reverse=True)
-        
+
         logger.info(f"Sorted by diff for time range: {start_time} - {end_time}")
         for instance in sorted_diff:
             logger.info(f"Instance: {instance[0]} | {instance[1]} ({instance[2]}-{instance[3]})")
@@ -59,7 +59,7 @@ def generate_charts():
         # 上位15位以外のインスタンスを除外
         filtered_diff = sorted_diff[:20]
         sorted_chart_data[start_time] = filtered_diff # filtered_diff を格納
-        
+
         # インスタンスごとのデータを格納
         for instance in sorted_diff:
             instance_host = instance[1]
@@ -70,8 +70,6 @@ def generate_charts():
             instance_data[instance_host]['time_labels'].append(time_label)
             instance_data[instance_host]['delay_values'].append(avg_delay)
 
-
-            
             # 観測しているインスタンスのhost, name, version, deff, created_atをすべて統合しjson形式で返す
             if instance[1] not in data["data"]:
                 data["data"][instance[1]] = {
@@ -86,13 +84,11 @@ def generate_charts():
                 "start_time": start_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
                 "end_time": end_time.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
             })
-        
+
     # ファイルに保存
     with open('output/data.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(data, indent=4, ensure_ascii=False))
-        
 
-        
     # ヒートマップ用のデータ準備
     instances = []
     time_labels = []
@@ -109,11 +105,10 @@ def generate_charts():
         for instance_name in instances:
             diffs.append(instance_diff_map.get(instance_name, 0) or 0) # Use 0 if instance not present or diff is None
         heatmap_data.append(diffs)
-        
+
     try:
         # ヒートマップ生成
         logger.info("Generating heatmap...")
-        
         heatmap_data = np.array(heatmap_data)
 
         fig, ax = plt.subplots(figsize=(10, 8))
