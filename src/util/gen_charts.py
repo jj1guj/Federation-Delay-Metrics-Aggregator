@@ -231,9 +231,13 @@ def generate_charts():
                 )
                 continue
             jst = timezone('Asia/Tokyo')
-            time_dt = datetime.datetime.strptime(data['time_labels'][-1], '%Y-%m-%d %H').replace(minute=0, second=0)
+            time_dt = datetime.datetime.strptime(
+                data['time_labels'][-1], '%Y-%m-%d %H').replace(minute=0,
+                                                                second=0)
             time_dt = jst.localize(time_dt)
-            nowtime = datetime.datetime.now(jst).replace(minute=0, second=0, microsecond=0)
+            nowtime = datetime.datetime.now(jst).replace(minute=0,
+                                                         second=0,
+                                                         microsecond=0)
             time_diff = nowtime - time_dt
             if time_diff.total_seconds() > 3600:
                 logger.warning(
