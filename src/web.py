@@ -68,7 +68,6 @@ def generate_html(images, last_updated_utc_str, last_updated_utc_iso):
       <button class="sort-btn active" data-sort="date-desc">新しい順</button>
       <button class="sort-btn" data-sort="date-asc">古い順</button>
       <button class="sort-btn" data-sort="name-asc">ホスト名順</button>
-      <button class="sort-btn" data-sort="size-desc">サイズ大きい順</button>
     </div>
   </div>
   <div class="gallery-stats">

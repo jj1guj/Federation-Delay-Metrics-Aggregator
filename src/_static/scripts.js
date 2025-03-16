@@ -70,9 +70,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 case 'name-asc':
                     visibleCards.sort((a, b) => a.dataset.hostname.localeCompare(b.dataset.hostname));
                     break;
-                case 'size-desc':
-                    visibleCards.sort((a, b) => parseInt(b.dataset.size) - parseInt(a.dataset.size));
-                    break;
             }
             visibleCards.forEach(card => gallery.appendChild(card));
         });
