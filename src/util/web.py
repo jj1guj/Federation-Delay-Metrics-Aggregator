@@ -2,6 +2,18 @@ import os
 
 import config
 import util.s3 as s3
+import logging
+import os
+import sys
+from logging import INFO, getLogger
+
+logger = getLogger(__name__)
+logger.setLevel(INFO)
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def generate_fdma_gallery():
@@ -9,10 +21,10 @@ def generate_fdma_gallery():
     files = s3.list_r2_files(prefix=prefix)
 
     png_files = [f for f in files if f['Key'].lower().endswith('.png')]
-    print(f"{len(png_files)} 個のPNG画像が見つかりました")
+    logger.info(f"detected {len(png_files)} PNG images")
 
     if not png_files:
-        print("PNG画像が見つかりませんでした。")
+        logger.error("No PNG images found.")
         return False
 
     # ソート(UTC)

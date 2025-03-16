@@ -11,7 +11,7 @@ from misskey import Misskey
 import config
 import util.gen_charts as gen_charts
 import util.s3 as s3
-import web
+import util.web as web
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
