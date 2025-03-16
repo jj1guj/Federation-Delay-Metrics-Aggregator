@@ -30,15 +30,15 @@ def generate_and_post():
         gen_charts.generate_charts()
         
         # data.jsonとヒートマップ, チャートをアップロード
-        s3.upload_to_r2("output/data.json", "data.json")
-        s3.upload_to_r2("output/avg_diff_heatmap.png", "heatmap.png")
-        s3.upload_to_r2("output/avg_diff.png", "chart.png")
+        s3.upload_to_r2("output/data.json", f"{config.PREFIX}/data.json")
+        s3.upload_to_r2("output/avg_diff_heatmap.png", f"{config.PREFIX}/heatmap.png")
+        s3.upload_to_r2("output/avg_diff.png", f"{config.PREFIX}/chart.png")
         
         # インスタンス別のチャートをアップロード(output/instances/{host}.png)
         for host in os.listdir("output/instances"):
-            s3.upload_to_r2(f"output/instances/{host}", f"instance/{host}")
-            
-        
+            s3.upload_to_r2(f"output/instances/{host}", f"{config.PREFIX}/instance/{host}")
+
+
         mi = Misskey(config.INSTANCE, config.MISSKEY_TOKEN)
         # ドライブへ画像のアップロード
         logger.info("Uploading files to drive")
@@ -55,7 +55,7 @@ def generate_and_post():
 各連合先の配送遅延情報が更新されました。
 {time}現在の情報です。
 
-インスタンス毎のチャートは`https://fdma.shahu.ski/report/instance/[host].png`から確認できます。
+インスタンス毎のチャートは`https://{config.BUCKET_PUBLIC_URL}/{config.PREFIX}/instance/[host].png`から確認できます。
 [GitHub](https://github.com/team-shahu/Federation-Delay-Metrics-Aggregator)
 
 #配送遅延 #FDMA #Federation-Delay-Metrics-Aggregator

@@ -37,12 +37,12 @@ def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
     try:
         logger.info(f"Uploading file: {file_path} to {object_name}")
         # ファイルをアップロード
-        s3.upload_file(file_path, config.PREFIX, object_name)
-        
+        s3.upload_file(file_path, config.BUCKET_NAME, object_name)
+
         # アップロードされたファイルの公開URLを生成
-        url = f"{config.BUKKET_PUBLIC_URL}{object_name}"
-        
-        
+        url = f"{config.BUCKET_PUBLIC_URL}{object_name}"
+
+
         logger.info(f"File {file_path} uploaded to {object_name}")
         return url
     except Exception as e:

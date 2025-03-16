@@ -33,8 +33,8 @@ def generate_charts():
         "last_updated": now.replace(tzinfo=datetime.timezone.utc).astimezone(timezone('Asia/Tokyo')).strftime('%Y-%m-%d %H:%M:%S'),
         "source_instance": config.INSTANCE,
         "charts": {
-            "heatmap": f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/heatmap.png",
-            "bar_chart": f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/chart.png"
+            "heatmap": f"{config.BUCKET_PUBLIC_URL}/{config.PREFIX}/heatmap.png",
+            "bar_chart": f"{config.BUCKET_PUBLIC_URL}/{config.PREFIX}/chart.png"
         },
         "data": {}
     }
@@ -78,7 +78,7 @@ def generate_charts():
                     "name": str(instance[0]),
                     "host": str(instance[1]),
                     "version": f"{instance[2]}-{instance[3]}",
-                    "chart_url": str(f"{config.BUKKET_PUBLIC_URL}/{config.PREFIX}/instance/{instance[1]}.png"),
+                    "chart_url": str(f"{config.BUCKET_PUBLIC_URL}/{config.PREFIX}/instance/{instance[1]}.png"),
                     "details": []
                 }
             data["data"][instance[1]]["details"].append({
