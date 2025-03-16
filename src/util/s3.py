@@ -48,3 +48,25 @@ def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
     except Exception as e:
         logger.error(f"Error: {e}")
         return None
+
+def list_r2_files(prefix=""):
+    try:
+        # オブジェクトリストを取得
+        paginator = s3.get_paginator('list_objects_v2')
+        pages = paginator.paginate(Bucket=config.BUCKET_NAME, Prefix=prefix)
+
+        files = []
+        for page in pages:
+            if 'Contents' in page:
+                for obj in page['Contents']:
+                    files.append({
+                        'Key': obj['Key'],
+                        'Size': obj['Size'],
+                        'LastModified': obj['LastModified']
+                    })
+
+        return files
+
+    except Exception as e:
+        print(f"エラー: {str(e)}")
+        return []
