@@ -58,7 +58,7 @@ def generate_and_post():
 各連合先の配送遅延情報が更新されました。
 {time}現在の情報です。
 
-インスタンス毎のチャートは`https://{config.BUCKET_PUBLIC_URL}/index.html`から確認できます。
+インスタンス毎のチャートは{config.BUCKET_PUBLIC_URL}/index.html から確認できます。
 [GitHub](https://github.com/team-shahu/Federation-Delay-Metrics-Aggregator)
 
 #配送遅延 #FDMA #Federation-Delay-Metrics-Aggregator
