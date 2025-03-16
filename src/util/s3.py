@@ -1,18 +1,21 @@
+import logging
 import os
+import sys
+from logging import INFO, getLogger
 from typing import Optional
-import config
+
 import boto3
 from botocore.config import Config
-import logging
-import sys
-from logging import getLogger, INFO
+
+import config
+
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 handler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
 
 s3 = boto3.client(
     "s3",
@@ -21,6 +24,7 @@ s3 = boto3.client(
     aws_secret_access_key=config.SECRET_ACCESS_KEY,
     config=Config(signature_version="s3v4"),
 )
+
 
 def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
     """
@@ -42,12 +46,12 @@ def upload_to_r2(file_path: str, object_name: Optional[str] = None) -> str:
         # アップロードされたファイルの公開URLを生成
         url = f"{config.BUCKET_PUBLIC_URL}{object_name}"
 
-
         logger.info(f"File {file_path} uploaded to {object_name}")
         return url
     except Exception as e:
         logger.error(f"Error: {e}")
         return None
+
 
 def list_r2_files(prefix=""):
     try:

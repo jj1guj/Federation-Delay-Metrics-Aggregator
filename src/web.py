@@ -1,6 +1,8 @@
 import os
+
 import config
 import util.s3 as s3
+
 
 def generate_fdma_gallery():
     prefix = f"{config.PREFIX}/instance"
@@ -27,7 +29,8 @@ def generate_fdma_gallery():
     # 最終更新(UTC)を文字列化 (サーバー側ではそのまま表示)
     if png_files:
         last_updated_utc_dt = png_files[0]['LastModified']
-        last_updated_utc_str = last_updated_utc_dt.strftime('%Y-%m-%d %H:%M:%S')
+        last_updated_utc_str = last_updated_utc_dt.strftime(
+            '%Y-%m-%d %H:%M:%S')
         last_updated_utc_iso = last_updated_utc_dt.isoformat()
     else:
         last_updated_utc_str = '不明'
@@ -35,7 +38,9 @@ def generate_fdma_gallery():
 
     output_path = os.path.join('output/index.html')
     with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(generate_html(png_files, last_updated_utc_str, last_updated_utc_iso))
+        f.write(
+            generate_html(png_files, last_updated_utc_str,
+                          last_updated_utc_iso))
 
     s3.upload_to_r2(output_path, 'index.html')
     s3.upload_to_r2('_static/style.css', 'static/style.css')
@@ -43,6 +48,7 @@ def generate_fdma_gallery():
     os.remove(output_path)
 
     return True
+
 
 def generate_html(images, last_updated_utc_str, last_updated_utc_iso):
     html_content = f"""<!DOCTYPE html>
@@ -83,6 +89,7 @@ def generate_html(images, last_updated_utc_str, last_updated_utc_iso):
 </html>"""
     return html_content
 
+
 def generate_image_cards(images):
     cards_html = ""
     for img in images:
@@ -104,6 +111,7 @@ def generate_image_cards(images):
   </div>
 </div>"""
     return cards_html
+
 
 if __name__ == "__main__":
     generate_fdma_gallery()
