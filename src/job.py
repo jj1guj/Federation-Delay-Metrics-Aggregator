@@ -68,7 +68,7 @@ def generate_and_post():
 {time}現在の情報です。
 
 [インスタンス毎のチャート]({config.BUCKET_PUBLIC_URL}/index.html)
-[GitHub](https://github.com/team-shahu/Federation-Delay-Metrics-Aggregator)
+[GitHub](https://github.com/jj1guj/Federation-Delay-Metrics-Aggregator/tree/make_landing_page)
 
 #配送遅延 #FDMA #Federation-Delay-Metrics-Aggregator
                         """,
