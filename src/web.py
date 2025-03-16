@@ -20,7 +20,7 @@ def generate_fdma_gallery():
 
     # 必要な情報を付加
     for img in png_files:
-        img['URL'] = f"{config.BUCKET_PUBLIC_URL}{img['Key']}"
+        img['URL'] = f"{config.BUCKET_PUBLIC_URL}/{img['Key']}"
         filename = img['Key'].split('/')[-1]
         img['Hostname'] = filename.replace('.png', '')
         # ISO 8601文字列(UTC)
